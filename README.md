@@ -15,7 +15,7 @@ All written in pure Go.
 
 ###Implementations
 
-Each varient has two implementaions:
+Each variant has two implementaions:
 * Channel (struct{}) based
 * Condition (sync.Condition) based
  
