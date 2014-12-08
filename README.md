@@ -19,7 +19,7 @@ Each varient has two implementaions:
 * Channel (struct{}) based
 * Condition (sync.Condition) based
  
-All implementations are available at run time and the defaults provided by the package can be toggled at runtime.
+All implementations are available at run-time and the defaults provided by the package can be toggled at runtime.
 
 ### Other Notes
 
