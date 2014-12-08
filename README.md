@@ -31,13 +31,13 @@ Basic unit-tests and benches are provided.
 
 ### Getting Started
 
-In [sema.go] you will find the three default constructors.
+In [sema.go] you will find the three default constructors and core interfaces.
 ```go
 	func NewSemaphore() Semaphore {...}
 	func NewCountingSema(count uint) CountingSema {...}
 	func NewTimeoutSema(count uint, defaultTimeout time.Duration) TimeoutCountingSema {...}
 ```
-`Semaphore` is extended from being binary to counting by `CountingSema` which in turn is enhanced with time-out support in its `TimeoutCountingSema` variant.
+The `Semaphore` interface is extended from being binary to counting by `CountingSema` which in turn is enhanced with time-out support in its `TimeoutCountingSema` variant.
 
 [Tylor Arndt]:https://plus.google.com/u/0/+TylorArndt/posts
 [sync.Cond]:http://golang.org/pkg/sync/#Cond
