@@ -36,12 +36,12 @@ type TimeoutCountingSema interface {
 }
 
 /* Provided default implementations based on benchmarking:
-BenchmarkP_condSema			  100000000  18.6 ns/op  0 B/op  0 allocs/op
-BenchmarkP_chanSema			  100000000  22.3 ns/op  0 B/op	 0 allocs/op
-BenchmarkV_condSema			  100000000  18.5 ns/op  0 B/op	 0 allocs/op
-BenchmarkV_chanSema			  100000000  22.8 ns/op  0 B/op	 0 allocs/op
-BenchmarkWake_condSema		  100000000  18.4 ns/op  0 B/op	 0 allocs/op
-BenchmarkWake_chanSema		  100000000  23.1 ns/op  0 B/op	 0 allocs/op
+BenchmarkP_condSema	      100000000  18.6 ns/op  0 B/op  0 allocs/op
+BenchmarkP_chanSema	      100000000  22.3 ns/op  0 B/op	 0 allocs/op
+BenchmarkV_condSema	      100000000  18.5 ns/op  0 B/op	 0 allocs/op
+BenchmarkV_chanSema	      100000000  22.8 ns/op  0 B/op	 0 allocs/op
+BenchmarkWake_condSema	      100000000  18.4 ns/op  0 B/op	 0 allocs/op
+BenchmarkWake_chanSema	      100000000  23.1 ns/op  0 B/op	 0 allocs/op
 BenchmarkWakeTimeout_condSema 100000000  25.9 ns/op  0 B/op	 0 allocs/op
 BenchmarkWakeTimeout_chanSema 50000000   36.1 ns/op  0 B/op	 0 allocs/op */
 var (
