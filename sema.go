@@ -51,7 +51,7 @@ var (
 )
 
 //UseChannelBasedImpl sets the default exported Semaphore variant
-// implementations to be channel based
+// implementations to be channel-based.
 func UseChannelBasedImpl() {
 	NewSemaphore = NewChanSema
 	NewCountingSema = NewChanSemaCount
@@ -59,7 +59,7 @@ func UseChannelBasedImpl() {
 }
 
 //UseChannelBasedImpl sets the default exported Semaphore variant
-// implementations to be channel based
+// implementations to be condition-based.
 func UseConditionBasedImpl() {
 	NewSemaphore = NewCondSema
 	NewCountingSema = NewCondSemaCount
