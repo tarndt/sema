@@ -4,7 +4,7 @@ sema: Semaphores for Go
 
 Author: [Tylor Arndt]
 
-0.9 Beta - API may change.
+0.9 Beta - API may change. (Bug reports and PRs are welcome)
 
 ###Features
 
