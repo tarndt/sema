@@ -45,9 +45,9 @@ BenchmarkWake_chanSema	      100000000  23.1 ns/op  0 B/op	 0 allocs/op
 BenchmarkWakeTimeout_condSema 100000000  25.9 ns/op  0 B/op	 0 allocs/op
 BenchmarkWakeTimeout_chanSema  50000000  36.1 ns/op  0 B/op	 0 allocs/op */
 var (
-	NewSemaphore    = NewCondSema
-	NewCountingSema = NewCondSemaCount
-	NewTimeoutSema  = NewCondSemaTimeout
+	NewSemaphore = NewChanSema
+	NewCountingSema = NewChanSemaCount
+	NewTimeoutSema = NewChanSemaTimeout
 )
 
 //UseChannelBasedImpl sets the default exported Semaphore variant
