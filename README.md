@@ -6,7 +6,7 @@ Author: [Tylor Arndt]
 
 0.9 Beta - API may change. (Bug reports and PRs are welcome)
 
-###Features
+### Features
 
 Semaphore variants provided for:
 * Binary semaphores
@@ -15,7 +15,7 @@ Semaphore variants provided for:
  
 All written in pure Go.
 
-###Implementations
+### Implementations
 
 Each variant has two implementaions:
 * Channel (`struct{}`) based
@@ -25,7 +25,7 @@ All implementations are available at run-time and the defaults provided by the p
 
 ### Other Notes
 
-The Condition-based implemenation is newer, lower-level, (aka. more bug prone), but seems to be faster. As always benchmark on your own hardware to confirm.
+While the default implementation is channel-based, the Condition-based implemenation is newer, lower-level, (aka. more bug prone), but seems to be faster. As always benchmark on your own hardware to confirm. 
 
 Basic unit-tests and benches are provided.
 
