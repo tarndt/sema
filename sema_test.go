@@ -5,6 +5,8 @@
 package sema
 
 import (
+	"context"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -119,6 +121,7 @@ const testTO = time.Millisecond * 10
 
 func TestTimeout_chanSema(t *testing.T) {
 	testTimeout(NewChanSemaTimeout(1, testTO), t)
+	testTimeoutUnits(NewChanSemaTimeout(10, testTO), t)
 }
 
 func testTimeout(sema TimeoutCountingSema, t *testing.T) {
@@ -136,5 +139,160 @@ func testTimeout(sema TimeoutCountingSema, t *testing.T) {
 	case <-time.After(testTO + time.Millisecond*10):
 		t.Errorf("Test timed-out: Timeout sema did not timeout and return as expected")
 	}
+}
 
+func testTimeoutUnits(sema TimeoutCountingSema, t *testing.T) {
+	doneCh := make(chan bool)
+	sema.Wait(sema.Capacity())
+	go func() {
+		doneCh <- sema.Wait(sema.Capacity())
+	}()
+	select {
+	case success := <-doneCh:
+		if success {
+			t.Errorf("P() returned: true, when is should have timed-out and returned: false.")
+		}
+	case <-time.After(testTO + time.Millisecond*10):
+		t.Errorf("Test timed-out: Timeout sema did not timeout and return as expected")
+	}
+
+}
+
+func TestContext_chanSema(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		testContext(NewChanSemaTimeout(1, testTO), t)
+	}
+	for i := 0; i < 10; i++ {
+		testContextUnits(NewChanSemaTimeout(10, testTO), t)
+	}
+}
+
+func testContext(sema TimeoutCountingSema, t *testing.T) {
+	testCtx, testCancel := context.WithTimeout(context.Background(), time.Second)
+	defer testCancel()
+
+	if !sema.AcquireCtx(testCtx) {
+		t.Fatalf("Intial aquire failed")
+	}
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	acquireErr := fmt.Errorf("AcquireCtx never unblocked")
+	releaseErr := fmt.Errorf("ReleaseCtx never unblocked")
+
+	go func() {
+		defer wg.Done()
+
+		ctx, cancel := context.WithTimeout(testCtx, time.Microsecond)
+		defer cancel()
+
+		if sema.AcquireCtx(ctx) {
+			acquireErr = fmt.Errorf("Inital acquire should have failed")
+			return
+		}
+
+		time.Sleep(time.Millisecond * 2)
+		ctx, cancel = context.WithTimeout(testCtx, time.Microsecond)
+		defer cancel()
+		if sema.ReleaseCtx(ctx) {
+			releaseErr = fmt.Errorf("Followup release should have failed")
+			return
+		}
+
+		ctx, cancel = context.WithTimeout(testCtx, time.Microsecond)
+		defer cancel()
+		if sema.AcquireCtx(ctx) {
+			acquireErr = nil
+		} else {
+			acquireErr = fmt.Errorf("Final acquire failed")
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(time.Millisecond)
+		if sema.ReleaseCtx(testCtx) {
+			releaseErr = nil
+		}
+	}()
+
+	wg.Wait()
+	switch {
+	case acquireErr != nil:
+		t.Errorf("AcquireCtx failure: %s", acquireErr)
+	case releaseErr != nil:
+		t.Errorf("ReleaseCtx failure: %s", releaseErr)
+	}
+}
+
+func testContextUnits(sema TimeoutCountingSema, t *testing.T) {
+	testCtx, testCancel := context.WithTimeout(context.Background(), time.Second)
+	defer testCancel()
+
+	success, units := sema.WaitCtx(testCtx, sema.Capacity())
+	switch {
+	case !success:
+		t.Fatalf("Intial wait failed")
+	case units != sema.Capacity():
+		t.Fatalf("Final intial wait got %d units rather than %d", units, sema.Capacity())
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	signalErr := fmt.Errorf("SignalCtx never unblocked")
+	waitErr := fmt.Errorf("WaitCtx never unblocked")
+
+	go func() {
+		defer wg.Done()
+
+		ctx, cancel := context.WithTimeout(testCtx, time.Microsecond)
+		defer cancel()
+
+		if success, _ := sema.WaitCtx(ctx, sema.Capacity()); success {
+			waitErr = fmt.Errorf("Inital wait should have failed")
+			return
+		}
+
+		time.Sleep(time.Millisecond * 2)
+		ctx, cancel = context.WithTimeout(testCtx, time.Microsecond)
+		defer cancel()
+		if success, units := sema.SignalCtx(ctx, sema.Capacity()); success {
+			signalErr = fmt.Errorf("Followup signal should have failed but %d of %d units were released", units, sema.Capacity())
+			return
+		} else if units > 0 {
+			signalErr = fmt.Errorf("Followup signal failed, but should have release no units and %d od %d units were released", units, sema.Capacity())
+			return
+		}
+
+		ctx, cancel = context.WithTimeout(testCtx, time.Microsecond)
+		defer cancel()
+		success, units := sema.WaitCtx(ctx, sema.Capacity())
+		switch {
+		case !success:
+			waitErr = fmt.Errorf("Final wait failed")
+		case units != sema.Capacity():
+			waitErr = fmt.Errorf("Final wait got %d units rather than %d", units, sema.Capacity())
+		default:
+			waitErr = nil
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(time.Millisecond)
+		if success, _ := sema.SignalCtx(testCtx, sema.Capacity()); success {
+			signalErr = nil
+		}
+	}()
+
+	wg.Wait()
+	switch {
+	case waitErr != nil:
+		t.Errorf("WaitCtx failure: %s", waitErr)
+	case signalErr != nil:
+		t.Errorf("SignalCtx failure: %s", signalErr)
+	}
 }

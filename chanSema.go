@@ -21,6 +21,10 @@ func NewChanSemaCount(count uint) CountingSema {
 	return newChanSema
 }
 
+func (s chanSema) Capacity() uint {
+	return uint(cap(s))
+}
+
 func (s chanSema) P() bool {
 	<-s
 	return true

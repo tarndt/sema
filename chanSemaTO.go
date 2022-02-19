@@ -104,7 +104,7 @@ func (s *chanSemaTO) WaitTO(units uint, timeout time.Duration) (bool, uint) {
 			}
 		}
 	}
-	return true, 0
+	return true, total
 }
 
 func (s *chanSemaTO) WaitCtx(ctx context.Context, units uint) (bool, uint) {
@@ -123,7 +123,7 @@ func (s *chanSemaTO) WaitCtx(ctx context.Context, units uint) (bool, uint) {
 			}
 		}
 	}
-	return true, 0
+	return true, total
 }
 
 func (s *chanSemaTO) V() bool {
@@ -197,7 +197,7 @@ func (s *chanSemaTO) SignalTO(units uint, timeout time.Duration) (bool, uint) {
 			}
 		}
 	}
-	return true, 0
+	return true, total
 }
 
 func (s *chanSemaTO) SignalCtx(ctx context.Context, units uint) (bool, uint) {
@@ -216,5 +216,5 @@ func (s *chanSemaTO) SignalCtx(ctx context.Context, units uint) (bool, uint) {
 			}
 		}
 	}
-	return true, 0
+	return true, total
 }

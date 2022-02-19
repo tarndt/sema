@@ -28,6 +28,7 @@ type CountingSema interface {
 	//These are HARD to use correctly and may be removed prior to v1
 	Wait(units uint) bool
 	Signal(units uint) bool
+	Capacity() uint
 }
 
 //A TimeoutCountingSema further extends a semaphore to provide the ability to
