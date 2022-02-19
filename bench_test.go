@@ -12,10 +12,6 @@ import (
 
 //Benchmark most complex semaphore variant creation
 
-func BenchmarkCreate_condSema(b *testing.B) {
-	benchCreate(NewCondSemaTimeout, b)
-}
-
 func BenchmarkCreate_chanSema(b *testing.B) {
 	benchCreate(NewChanSemaTimeout, b)
 }
@@ -33,10 +29,6 @@ func benchCreate(contructor func(uint, time.Duration) TimeoutCountingSema, b *te
 
 //Benchmark P
 
-func BenchmarkP_condSema(b *testing.B) {
-	benchP(NewCondSemaCount(uint(b.N)), b)
-}
-
 func BenchmarkP_chanSema(b *testing.B) {
 	benchP(NewChanSemaCount(uint(b.N)), b)
 }
@@ -50,10 +42,6 @@ func benchP(sema CountingSema, b *testing.B) {
 }
 
 //Benchmark V
-
-func BenchmarkV_condSema(b *testing.B) {
-	benchV(NewCondSemaCount(uint(b.N)), b)
-}
 
 func BenchmarkV_chanSema(b *testing.B) {
 	benchV(NewChanSemaCount(uint(b.N)), b)
@@ -69,10 +57,6 @@ func benchV(sema CountingSema, b *testing.B) {
 }
 
 //Benchmark wake-ups for counting semaphores
-
-func BenchmarkWake_condSema(b *testing.B) {
-	benchV(NewCondSemaCount(uint(b.N)), b)
-}
 
 func BenchmarkWake_chanSema(b *testing.B) {
 	benchV(NewChanSemaCount(uint(b.N)), b)
@@ -95,10 +79,6 @@ func benchWake(sema CountingSema, b *testing.B) {
 }
 
 //Benchmark wake-ups for counting semaphores with timeout support
-
-func BenchmarkWakeTimeout_condSema(b *testing.B) {
-	benchV(NewCondSemaTimeout(uint(b.N), time.Minute), b)
-}
 
 func BenchmarkWakeTimeout_chanSema(b *testing.B) {
 	benchV(NewChanSemaTimeout(uint(b.N), time.Minute), b)

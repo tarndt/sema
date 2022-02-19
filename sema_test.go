@@ -12,10 +12,6 @@ import (
 
 //Semaphore P/V test
 
-func TestPV_condSema(t *testing.T) {
-	testP(NewCondSemaCount(1), t)
-}
-
 func TestPV_chanSema(t *testing.T) {
 	testP(NewChanSemaCount(1), t)
 }
@@ -46,10 +42,6 @@ func testP(sema CountingSema, t *testing.T) {
 
 const countFrm = 100
 
-func TestPVRecur_condSema(t *testing.T) {
-	testPVRecur(NewCondSema(), t)
-}
-
 func TestPVRecur_chanSema(t *testing.T) {
 	testPVRecur(NewChanSema(), t)
 }
@@ -66,7 +58,7 @@ func testPVRecur(sema Semaphore, t *testing.T) {
 		}
 		go stateChanger()
 		results <- state
-		state += 1
+		state++
 	}
 	go stateChanger()
 	for i := 0; i < countFrm; i++ {
@@ -79,16 +71,15 @@ func testPVRecur(sema Semaphore, t *testing.T) {
 
 //Test CountingSema counting down with Wait/Signal
 
-func TestCountDown_condSema(t *testing.T) {
-	testCountDown(NewCondSemaCount(countFrm), t)
-}
-
 func TestCountDown_chanSema(t *testing.T) {
-	testCountDown(NewChanSemaCount(countFrm), t)
+	for i := 0; i < 10; i++ {
+		testCountDown(NewChanSemaCount(countFrm), t)
+	}
 }
 
 func testCountDown(sema CountingSema, t *testing.T) {
 	results := make(chan uint, countFrm)
+
 	var stateChanger func(need uint)
 	stateChanger = func(need uint) {
 		switch {
@@ -98,13 +89,22 @@ func testCountDown(sema CountingSema, t *testing.T) {
 			return
 		}
 		go stateChanger(need + 1)
-		sema.Wait(need)
-		defer sema.Signal(need + 1)
+		for !sema.Wait(need) {
+			time.Sleep(time.Millisecond / 2)
+		}
+		defer func() {
+			for !sema.Signal(need + 1) {
+				time.Sleep(time.Millisecond / 2)
+			}
+		}()
 		results <- need
 	}
-	sema.Wait(countFrm)
+
+	if !sema.Wait(countFrm) {
+		t.Fatal("Initial claiming of resources failed")
+	}
 	go stateChanger(1)
-	sema.V()
+
 	for i := uint(1); i < countFrm; i++ {
 		if result := <-results; i != result {
 			t.Errorf("Out of sequence count down, expected: %d, got: %d!", i, result)
@@ -116,10 +116,6 @@ func testCountDown(sema CountingSema, t *testing.T) {
 //Test TimeoutCountingSema timing out
 
 const testTO = time.Millisecond * 10
-
-func TestTimeout_condSema(t *testing.T) {
-	testTimeout(NewCondSemaTimeout(1, testTO), t)
-}
 
 func TestTimeout_chanSema(t *testing.T) {
 	testTimeout(NewChanSemaTimeout(1, testTO), t)
