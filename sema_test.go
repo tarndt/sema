@@ -172,7 +172,7 @@ func testContext(sema TimeoutCountingSema, t *testing.T) {
 	defer testCancel()
 
 	if !sema.AcquireCtx(testCtx) {
-		t.Fatalf("Intial aquire failed")
+		t.Fatalf("Initial acquire failed")
 	}
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -187,7 +187,7 @@ func testContext(sema TimeoutCountingSema, t *testing.T) {
 		defer cancel()
 
 		if sema.AcquireCtx(ctx) {
-			acquireErr = fmt.Errorf("Inital acquire should have failed")
+			acquireErr = fmt.Errorf("Initial acquire should have failed")
 			return
 		}
 
@@ -233,9 +233,9 @@ func testContextUnits(sema TimeoutCountingSema, t *testing.T) {
 	success, units := sema.WaitCtx(testCtx, sema.Capacity())
 	switch {
 	case !success:
-		t.Fatalf("Intial wait failed")
+		t.Fatalf("Initial wait failed")
 	case units != sema.Capacity():
-		t.Fatalf("Final intial wait got %d units rather than %d", units, sema.Capacity())
+		t.Fatalf("Final Initial wait got %d units rather than %d", units, sema.Capacity())
 	}
 
 	var wg sync.WaitGroup
@@ -251,7 +251,7 @@ func testContextUnits(sema TimeoutCountingSema, t *testing.T) {
 		defer cancel()
 
 		if success, _ := sema.WaitCtx(ctx, sema.Capacity()); success {
-			waitErr = fmt.Errorf("Inital wait should have failed")
+			waitErr = fmt.Errorf("Initial wait should have failed")
 			return
 		}
 
