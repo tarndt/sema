@@ -1,9 +1,10 @@
 sema: Semaphores for Go
 ====
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)[![Go Reference](https://pkg.go.dev/badge/github.com/tarndt/sema.svg)](https://pkg.go.dev/github.com/tarndt/sema) [![Go Report Card](https://goreportcard.com/badge/github.com/tarndt/sema)](https://goreportcard.com/report/github.com/tarndt/sema)
+
 ### Author & Version
 
-Author: [Tylor Arndt]
-
+Author: [Tylor Arndt](https://www.linkedin.com/in/tylorarndt/)
 0.95 RC - API may change. (Bug reports and PRs are welcome)
 
 ### Features
